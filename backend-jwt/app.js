@@ -7,7 +7,7 @@ import cors from 'cors';
 import { PORT } from './config/env.js';
 import generarJwt from './helpers/generar-jwt.js';
 import validarJwt from './middlewares/validar-jwt.js';
-import { database } from './db/database.js';
+import { myPool } from './db/database.js';
 import morgan from 'morgan';
 
 
@@ -30,13 +30,13 @@ app.use(session({
 
 // Endpoint de inicio de sesión (login)
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { nombre_Alumno, Direccion } = req.body;
 
 
     try {
-        const user = database.user.find(
-            user => user.username === username && user.password === password
-        );
+        // database.user.find(user => user.username === username && user.password === password);
+        const user = await myPool.query(`SELECT * FROM clasedealumnos WHERE nombre_Alumno = ? AND Direccion = ?`,[nombre_Alumno,Direccion])
+        
 
         // Validación de usuario
         if (!user) {
